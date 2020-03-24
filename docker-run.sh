@@ -5,4 +5,7 @@ set -ex
 
 CURRENT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
-docker-compose -f $CURRENT_DIR/docker-compose.yml up --exit-code-from logstash
+cd .ci
+
+# docker will look for: "./docker-compose.yml" (and "./docker-compose.override.yml")
+docker-compose up --exit-code-from logstash
