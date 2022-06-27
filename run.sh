@@ -5,4 +5,4 @@ env
 
 set -ex
 
-bundle exec rspec --format=documentation
+jruby -rbundler/setup -S rake test
