@@ -5,4 +5,4 @@ env
 
 set -ex
 
-jruby -rbundler/setup -S rake test
+bundle exec rake test
