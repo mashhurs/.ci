@@ -5,7 +5,7 @@ FROM docker.elastic.co/logstash/logstash${DISTRIBUTION_SUFFIX}:${ELASTIC_STACK_V
 # allows modifying the system inside the container (using the .ci/setup.sh hook)
 USER root
 RUN if [ $(command -v apt-get) ]; then \
-      apt-get install -y sudo && \
+      apt-get update -y && apt-get install -y sudo && \
       gpasswd -a logstash sudo; \
     else \
       yum install -y sudo && \
