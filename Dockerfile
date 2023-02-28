@@ -21,6 +21,7 @@ RUN cp /usr/share/logstash/logstash-core/versions-gem-copy.yml /usr/share/logsta
 # NOTE: since 8.0 JDK is bundled as part of the LS distribution under $LS_HOME/jdk
 ENV PATH="${PATH}:/usr/share/logstash/vendor/jruby/bin:/usr/share/logstash/jdk/bin"
 ENV LOGSTASH_SOURCE="1"
+ENV LOGSTASH_PATH="/usr/share/logstash/logstash-core/"
 ENV ELASTIC_STACK_VERSION=$ELASTIC_STACK_VERSION
 # DISTRIBUTION="default" (by default) or "oss"
 ARG DISTRIBUTION
