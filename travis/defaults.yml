@@ -1,3 +1,0 @@
-os: linux
-dist: focal # 20.04 LTS
-language: minimal # Docker installed

@@ -2,21 +2,26 @@
 
 Shared helpers to dry out common CI scripts used by plugins.
 
-LogStash plugins by convention store configuration under `ci/` folder,
-`.ci` is meant to be an optional replacement for most `ci/*` files.
+LogStash plugins by convention store their own configurations under `.ci/` and `.buildkite/` folders.
+This common `.ci` is meant to be a common ot an optional replacement for most `.ci/*` files.
 
-There's also assumptions about using `rspec` to write tests currently.
 
-## Setup
+## How to use common script in Buildkite?
 
-Set up your plugin's .travis.yml:
+In plugin's pipeline definition (example `.buildkite/pipeline.yml`), pull the this common script and exclude intersected files
+
 
 ```
-import:
-- logstash-plugins/.ci:travis/defaults.yml@v0.1.0
-- logstash-plugins/.ci:travis/matrix.yml@v0.1.0
-- logstash-plugins/.ci:travis/exec.yml@v0.1.0
+mkdir -p .ci && curl -sL https://github.com/mashhurs/.ci/archive/main.tar.gz | tar zxvf - --skip-old-files --strip-components=1 -C .ci --wildcards '*Dockerfile*' '*docker*' '*.sh'
+
 ```
+
+### TODO
+
+- Currently, as we are moving to Buildkite, the run config is located under `.buildkite/pipeline.yml` and it frequently changes. We may make a common shell script under this repository where all plugins can leverage.
+
+- Travis configs are removed. Some of them belong to performance test configurations. Let's also make a common config for the performance tests as well.
+
 
 ### Custom behaviour
 
