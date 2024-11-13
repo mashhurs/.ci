@@ -51,7 +51,8 @@ if [[ "$ELASTIC_STACK_RETRIEVED_VERSION" != "null" ]]; then
   export ELASTIC_STACK_VERSION=$ELASTIC_STACK_RETRIEVED_VERSION
 elif [[ "$ELASTIC_STACK_VERSION" == "8.next" ]]; then
   # we know "8.next" only exists between FF and GA of a minor
-  exit 0
+  # exit 1 so the build is skipped
+  exit 1
 fi
 
 case "${DISTRIBUTION}" in
