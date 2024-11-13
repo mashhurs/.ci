@@ -8,7 +8,20 @@ pull_docker_snapshot() {
   project="${1?project name required}"
   local docker_image="docker.elastic.co/${project}/${project}${DISTRIBUTION_SUFFIX}:${ELASTIC_STACK_VERSION}"
   echo "Pulling $docker_image"
-  docker pull "$docker_image"
+  if docker pull "$docker_image" ; then
+    echo "docker pull successful"
+  else
+    case "$ELASTIC_STACK_VERSION_ARG" in
+     "8.previous"|"8.current"|"8.next")
+     echo "Failed to pull logstash-${ELASTIC_STACK_VERSION}. Likely due to missing DRA build, skipping."
+     exit 0
+     ;;
+     *)
+     echo "Failed to pull logstash-${ELASTIC_STACK_VERSION}. The image should exist, failing the build.."
+     exit 1
+     ;;
+    esac
+  fi
 }
 
 VERSION_URL="https://raw.githubusercontent.com/elastic/logstash/main/ci/logstash_releases.json"
@@ -19,8 +32,11 @@ if [ -z "${ELASTIC_STACK_VERSION}" ]; then
     exit 1
 fi
 
+# save the original arg if needed
+ELASTIC_STACK_VERSION_ARG="$ELASTIC_STACK_VERSION"
+
 echo "Fetching versions from $VERSION_URL"
-VERSIONS=$(curl $VERSION_URL)
+VERSIONS=$(curl -s $VERSION_URL)
 
 if [[ "$SNAPSHOT" = "true" ]]; then
   ELASTIC_STACK_RETRIEVED_VERSION=$(echo $VERSIONS | jq '.snapshots."'"$ELASTIC_STACK_VERSION"'"')
@@ -35,6 +51,9 @@ if [[ "$ELASTIC_STACK_RETRIEVED_VERSION" != "null" ]]; then
   ELASTIC_STACK_RETRIEVED_VERSION="${ELASTIC_STACK_RETRIEVED_VERSION#\"}"
   echo "Translated $ELASTIC_STACK_VERSION to ${ELASTIC_STACK_RETRIEVED_VERSION}"
   export ELASTIC_STACK_VERSION=$ELASTIC_STACK_RETRIEVED_VERSION
+elif [[ "$ELASTIC_STACK_VERSION" == "8.next" ]]; then
+  # we know "8.next" only exists between FF and GA of a minor
+  exit 0
 fi
 
 case "${DISTRIBUTION}" in
