@@ -6,12 +6,13 @@ set -e
 
 pull_docker_snapshot() {
   project="${1?project name required}"
+  stack_version="${2?stack version required}"
   local docker_image="docker.elastic.co/${project}/${project}${DISTRIBUTION_SUFFIX}:${ELASTIC_STACK_VERSION}"
   echo "Pulling $docker_image"
   if docker pull "$docker_image" ; then
     echo "docker pull successful"
   else
-    case "$ELASTIC_STACK_VERSION_ARG" in
+    case $stack_version in
       "8.previous"|"8.current"|"8.next")
         exit 1
         ;;
@@ -30,7 +31,7 @@ if [ -z "${ELASTIC_STACK_VERSION}" ]; then
     exit 1
 fi
 
-# save the original arg if needed
+# save the original unmodified string to pass to pull_docker_snapshot
 ELASTIC_STACK_VERSION_ARG="$ELASTIC_STACK_VERSION"
 
 echo "Fetching versions from $VERSION_URL"
@@ -63,7 +64,7 @@ export DISTRIBUTION_SUFFIX
 echo "Testing against version: $ELASTIC_STACK_VERSION (distribution: ${DISTRIBUTION:-"default"})"
 
 if [[ "$ELASTIC_STACK_VERSION" = *"-SNAPSHOT" ]]; then
-    pull_docker_snapshot "logstash"
+    pull_docker_snapshot "logstash" $ELASTIC_STACK_VERSION_ARG
 fi
 
 if [ -f Gemfile.lock ]; then
