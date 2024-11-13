@@ -1,9 +1,9 @@
 before_install:
   - mkdir -p .ci && curl -sL https://github.com/logstash-plugins/.ci/archive/1.x.tar.gz | tar zxvf - --skip-old-files --strip-components=1 -C .ci --wildcards "*Dockerfile*" "*docker*" "*.sh"
 install:
-  - .ci/docker-setup.sh
-  - exit_code=$?
   - |
+    .ci/docker-setup.sh;
+    exit_code=$?;
     case $exit_code in
       0)
         echo "Install succeeded."
